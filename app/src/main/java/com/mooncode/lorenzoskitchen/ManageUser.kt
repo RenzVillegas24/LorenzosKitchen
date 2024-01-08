@@ -33,6 +33,7 @@ class ManageUser : Fragment() {
         val view = inflater.inflate(R.layout.fragment_manage_user, container, false)
 
         val userItems = realm.where(User::class.java).findAll()
+        val userUUID = sharedPrefs.getString("current_user", "")
 
         view.findViewById<MaterialButton>(R.id.btnAddUser).setOnClickListener {
              findNavController().navigate(R.id.register_add,
@@ -221,7 +222,7 @@ class ManageUser : Fragment() {
                     .show()
             }
             deleteButton.backgroundTintList = ColorStateList.valueOf(typedValue.data)
-            if (user.email == "admin") {
+            if (user.email == "admin" || user.getId() == userUUID) {
                 deleteButton.isClickable = false
                 deleteButton.alpha = 0.5f
             }
@@ -254,7 +255,7 @@ class ManageUser : Fragment() {
 
             }
             updateButton.backgroundTintList = ColorStateList.valueOf(typedValue.data)
-            if (user.email == "admin") {
+            if (user.email == "admin" || user.getId() == userUUID) {
                 updateButton.isClickable = false
                 updateButton.alpha = 0.5f
             }
@@ -312,12 +313,7 @@ class ManageUser : Fragment() {
         cardView.addView(constraintLayout)
         view.findViewById<LinearLayout>(R.id.listUsers).addView(cardView)
 
-
-
-
         }
-
-
 
         return view
     }

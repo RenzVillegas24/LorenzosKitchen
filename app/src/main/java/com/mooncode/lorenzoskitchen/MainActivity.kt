@@ -16,13 +16,14 @@ import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sharedPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE)
 
+        sharedPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE)
         val navView = findViewById<FragmentContainerView>(R.id.navView)
+
+
 
         val existingPerson = realm.where(User::class.java).equalTo("email", "admin").findFirst()
 
@@ -231,10 +232,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // override the function when the user go back to this activity
-    override fun onStart() {
-        super.onStart()
-        if (sharedPrefs.getString("current_user", "") != "") {
+
+    override fun onResume() {
+        super.onResume()
+
+        if (findNavController(R.id.navView).currentDestination?.label != "fragment_main_container" && sharedPrefs.getString("current_user", "") != "") {
             val currentUser = realm.where(User::class.java)
                 .equalTo("id", ObjectId(sharedPrefs.getString("current_user", "")))
                 .findFirst()
@@ -247,10 +249,16 @@ class MainActivity : AppCompatActivity() {
                 findNavController(R.id.navView).popBackStack()
                 findNavController(R.id.navView).navigate(R.id.mainContainer)
 
-
             }
+
         }
+
+
+
     }
+
+
+
 
 
 }

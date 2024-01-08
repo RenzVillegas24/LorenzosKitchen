@@ -35,6 +35,31 @@ class Cart : Fragment() {
 
         val cartItems = currentUser?.cart!!
 
+        view.findViewById<MaterialButton>(R.id.btnCheckout).setOnClickListener {
+            if (cartItems.size > 0) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Checkout")
+                    .setMessage("Are you sure you want to checkout?")
+                    .setNegativeButton("Cancel") { _, _ -> }
+                    .setPositiveButton("Checkout") { _, _ ->
+                        // function soon to be implemented
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("Function not yet implemented")
+                            .setMessage("This function is not yet implemented :(")
+                            .setPositiveButton("OK") { _, _ -> }
+                            .show()
+                    }
+                    .show()
+
+            } else {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Empty Cart")
+                    .setMessage("Your cart is empty. Please add items to your cart before checking out.")
+                    .setPositiveButton("OK") { _, _ -> }
+                    .show()
+            }
+        }
+
         Log.d("cart", cartItems.size.toString())
 
         for (item in cartItems) {
