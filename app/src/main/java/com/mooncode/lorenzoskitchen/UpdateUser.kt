@@ -27,6 +27,7 @@ import io.realm.Realm
 import org.bson.types.ObjectId
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class UpdateUser : Fragment() {
@@ -38,10 +39,24 @@ class UpdateUser : Fragment() {
                 val data: Intent? = result.data
                 data?.let {
                     val selectedImageUri = data.data
-                    val selectedBitmap = ImageUtils.cropToRatio(uriToBitmap(selectedImageUri!!)!!,1.0,1.0)
+                    Thread {
+                        val selectedBitmap = ImageUtils
+                            .resize(
+                                ImageUtils
+                                    .cropToRatio(
+                                        uriToBitmap(selectedImageUri!!)!!,
+                                        1.0,
+                                        1.0),
+                                1000,
+                                1000)
 
-                    imageView?.setImageBitmap(selectedBitmap)
-                    imageBase64 = ImageUtils.toBase64(selectedBitmap)
+                        imageBase64 = ImageUtils.toBase64(selectedBitmap)
+
+                        activity?.runOnUiThread {
+                            imageView?.setImageBitmap(selectedBitmap)
+                        }
+                    }.start()
+
                 }
             }
         }
@@ -93,7 +108,7 @@ class UpdateUser : Fragment() {
                 view.findViewById<TextInputEditText>(R.id.txtEmail).setText(user.email)
                 view.findViewById<TextInputEditText>(R.id.txtPassword).setText(user.password)
 
-                view.findViewById<AutoCompleteTextView>(R.id.selGender).setText(user.gender)
+                view.findViewById<AutoCompleteTextView>(R.id.selGender).setText(user.getGenderEnum().toString())
                 view.findViewById<AutoCompleteTextView>(R.id.selAccountType).setText(if (user.isAdministrator) "Administrator" else "User")
 
 

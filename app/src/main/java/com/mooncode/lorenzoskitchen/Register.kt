@@ -35,10 +35,25 @@ class Register : Fragment() {
                 val data: Intent? = result.data
                 data?.let {
                     val selectedImageUri = data.data
-                    val selectedBitmap = ImageUtils.cropToRatio(uriToBitmap(selectedImageUri!!)!!,1.0,1.0)
 
-                    imageView?.setImageBitmap(selectedBitmap)
-                    imageBase64 = ImageUtils.toBase64(selectedBitmap)
+                    Thread {
+                        val selectedBitmap = ImageUtils
+                            .resize(
+                                ImageUtils
+                                    .cropToRatio(
+                                        uriToBitmap(selectedImageUri!!)!!,
+                                        1.0,
+                                        1.0),
+                                1000,
+                                1000)
+
+                        imageBase64 = ImageUtils.toBase64(selectedBitmap)
+
+                        activity?.runOnUiThread {
+                            imageView?.setImageBitmap(selectedBitmap)
+                        }
+                    }.start()
+
                 }
             }
         }

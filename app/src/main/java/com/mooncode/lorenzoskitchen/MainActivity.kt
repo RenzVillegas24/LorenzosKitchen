@@ -35,8 +35,8 @@ class MainActivity : AppCompatActivity() {
                     profileUUID,
                     ImageUtils.resize(
                         ImageUtils.fromBase64(getString(R.string.admin_profile_image)),
-                        720,
-                        720)
+                        1000,
+                        1000)
                 )
             }.start()
 

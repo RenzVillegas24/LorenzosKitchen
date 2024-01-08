@@ -34,78 +34,90 @@ class AddMenu : Fragment() {
                 val data: Intent? = result.data
                 data?.let {
                     val selectedImageUri = data.data
-                    val selectedBitmap = ImageUtils.cropToRatio(uriToBitmap(selectedImageUri!!)!!,3.0,2.0)
 
-                    imageBase64[UUID.randomUUID().toString().replace("-", "")] = (ImageUtils.toBase64(selectedBitmap))
+                    Thread{
+                        val selectedBitmap = ImageUtils
+                            .resize(
+                                ImageUtils
+                                    .cropToRatio(
+                                        uriToBitmap(selectedImageUri!!)!!,
+                                        3.0,
+                                        2.0),
+                                1000,
+                                667)
 
+                        imageBase64[UUID.randomUUID().toString().replace("-", "")] = (ImageUtils.toBase64(selectedBitmap))
 
-                    view?.findViewById<ViewGroup>(R.id.llImageContainer)?.removeAllViews()
+                        activity?.runOnUiThread {
+                            view?.findViewById<ViewGroup>(R.id.llImageContainer)?.removeAllViews()
 
-                    for (image in imageBase64) {
-                        val imageCard = MaterialCardView(requireContext())
-                        val imageCardParams = MarginLayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                        imageCardParams.setMargins(0, 0, 0, typeDP(10, requireActivity()))
-                        imageCard.layoutParams = imageCardParams
-                        imageCard.radius = 10f
-                        imageCard.strokeWidth = 0
-                        imageCard.cardElevation = 8f
+                            for (image in imageBase64) {
+                                val imageCard = MaterialCardView(requireContext())
+                                val imageCardParams = MarginLayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT
+                                )
+                                imageCardParams.setMargins(0, 0, 0, typeDP(10, requireActivity()))
+                                imageCard.layoutParams = imageCardParams
+                                imageCard.radius = 10f
+                                imageCard.strokeWidth = 0
+                                imageCard.cardElevation = 8f
 
-                        val imageLayout = ConstraintLayout(requireContext())
-                        imageLayout.layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-
-
-                        val imageCardImage = ImageView(requireContext())
-                        imageCardImage.layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                        imageCardImage.id = View.generateViewId()
-                        imageCardImage.scaleType = ImageView.ScaleType.CENTER_CROP
-                        imageCardImage.adjustViewBounds = true
-                        imageCardImage.setImageBitmap(ImageUtils.fromBase64(image.value))
-                        imageLayout.addView(imageCardImage)
+                                val imageLayout = ConstraintLayout(requireContext())
+                                imageLayout.layoutParams = ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT
+                                )
 
 
-                        val imageRemoveBtn = MaterialButton(requireContext())
-                        imageRemoveBtn.layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                        imageRemoveBtn.id = View.generateViewId()
-                        imageRemoveBtn.icon = resources.getDrawable(R.drawable.ic_remove, null)
-                        imageRemoveBtn.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
-                        imageRemoveBtn.setPadding(typeDP(10, requireActivity()),0, typeDP(10, requireActivity()),0)
-                        imageRemoveBtn.text = "Remove"
-                        imageRemoveBtn.setOnClickListener {
-                            imageBase64.remove(image.key)
-                            view?.findViewById<ViewGroup>(R.id.llImageContainer)?.removeView(imageCard)
+                                val imageCardImage = ImageView(requireContext())
+                                imageCardImage.layoutParams = ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT
+                                )
+                                imageCardImage.id = View.generateViewId()
+                                imageCardImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                                imageCardImage.adjustViewBounds = true
+                                imageCardImage.setImageBitmap(ImageUtils.fromBase64(image.value))
+                                imageLayout.addView(imageCardImage)
+
+
+                                val imageRemoveBtn = MaterialButton(requireContext())
+                                imageRemoveBtn.layoutParams = ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT
+                                )
+                                imageRemoveBtn.id = View.generateViewId()
+                                imageRemoveBtn.icon = resources.getDrawable(R.drawable.ic_remove, null)
+                                imageRemoveBtn.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
+                                imageRemoveBtn.setPadding(typeDP(10, requireActivity()),0, typeDP(10, requireActivity()),0)
+                                imageRemoveBtn.text = "Remove"
+                                imageRemoveBtn.setOnClickListener {
+                                    imageBase64.remove(image.key)
+                                    view?.findViewById<ViewGroup>(R.id.llImageContainer)?.removeView(imageCard)
+                                }
+                                imageLayout.addView(imageRemoveBtn)
+
+
+                                val set = ConstraintSet()
+                                set.clone(imageLayout)
+
+                                set.connect(imageCardImage.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+                                set.connect(imageCardImage.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+                                set.connect(imageCardImage.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+
+                                set.connect(imageRemoveBtn.id, ConstraintSet.TOP, imageCardImage.id, ConstraintSet.TOP, typeDP(7, requireActivity()))
+                                set.connect(imageRemoveBtn.id, ConstraintSet.START, imageCardImage.id, ConstraintSet.START, typeDP(12, requireActivity()))
+
+                                set.applyTo(imageLayout)
+
+
+                                imageCard.addView(imageLayout)
+
+                                view?.findViewById<LinearLayout>(R.id.llImageContainer)?.addView(imageCard)
+                            }
                         }
-                        imageLayout.addView(imageRemoveBtn)
-
-
-                        val set = ConstraintSet()
-                        set.clone(imageLayout)
-
-                        set.connect(imageCardImage.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-                        set.connect(imageCardImage.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-                        set.connect(imageCardImage.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-
-                        set.connect(imageRemoveBtn.id, ConstraintSet.TOP, imageCardImage.id, ConstraintSet.TOP, typeDP(7, requireActivity()))
-                        set.connect(imageRemoveBtn.id, ConstraintSet.START, imageCardImage.id, ConstraintSet.START, typeDP(12, requireActivity()))
-
-                        set.applyTo(imageLayout)
-
-
-                        imageCard.addView(imageLayout)
-
-                        view?.findViewById<LinearLayout>(R.id.llImageContainer)?.addView(imageCard)
-                    }
+                    }.start()
                 }
             }
         }

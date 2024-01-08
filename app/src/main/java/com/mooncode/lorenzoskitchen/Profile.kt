@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.compose.ui.text.capitalize
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -18,6 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
 import org.bson.types.ObjectId
 import java.text.SimpleDateFormat
+import java.util.Locale
 
 class Profile : Fragment() {
 
@@ -47,7 +49,7 @@ class Profile : Fragment() {
                     view.findViewById<ShapeableImageView>(R.id.imgProfileImage).setImageBitmap(profileImage)
                     view.findViewById<TextView>(R.id.txtFullName).text = "${currentUser.firstName} ${currentUser.middleName} ${currentUser.lastName}"
                     view.findViewById<TextView>(R.id.txtBirthday).text = SimpleDateFormat("MMMM dd, yyyy").format(currentUser.birthday)
-                    view.findViewById<TextView>(R.id.txtGender).text = currentUser.gender
+                    view.findViewById<TextView>(R.id.txtGender).text = currentUser.getGenderEnum().toString()
                     view.findViewById<TextView>(R.id.txtAddress).text = currentUser.address
                     view.findViewById<TextView>(R.id.txtPhone).text = currentUser.phoneNumber
                 }
