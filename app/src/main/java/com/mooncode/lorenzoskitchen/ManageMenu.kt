@@ -78,12 +78,13 @@ class ManageMenu : Fragment() {
 
             val imgUUID = "${item.imagesUUID[0]}"
 
-
+            cardView.alpha = 0f
             Thread {
                 val imageBitmap = ImageUtils.getFromSharedPref(sharedPrefs, imgUUID)
 
                 requireActivity().runOnUiThread {
                     image.setImageBitmap(imageBitmap)
+                    cardView.animate().alpha(1f).setDuration(250).start()
                 }
             }.start()
 

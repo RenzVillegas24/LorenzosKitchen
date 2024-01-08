@@ -77,12 +77,13 @@ class ManageUser : Fragment() {
             val image = ImageView(requireContext())
             val imgUUID = "${user.profileUUID}"
 
-
+            cardView.alpha = 0f
             Thread {
                 val imageBitmap = ImageUtils.getFromSharedPref(sharedPrefs, imgUUID)
 
                 requireActivity().runOnUiThread {
                     image.setImageBitmap(imageBitmap)
+                    cardView.animate().alpha(1f).setDuration(250).start()
                 }
             }.start()
 
@@ -115,6 +116,8 @@ class ManageUser : Fragment() {
             userEmail.layoutParams = userEmailParams
             userEmail.text = user.email
             userEmail.textSize = 20f
+            userEmail.ellipsize = TextUtils.TruncateAt.END
+            userEmail.maxLines = 1
             userEmail.setTypeface(null, android.graphics.Typeface.BOLD)
             userEmail.id = user.id.hashCode() + 1
             constraintLayout.addView(userEmail)
@@ -127,6 +130,8 @@ class ManageUser : Fragment() {
             userFullName.layoutParams = userFullNameParams
             userFullName.text = "${user.firstName} ${user.middleName} ${user.lastName}"
             userFullName.textSize = 15f
+            userFullName.ellipsize = TextUtils.TruncateAt.END
+            userFullName.maxLines = 1
             userFullName.id = user.id.hashCode() + 2
             constraintLayout.addView(userFullName)
 
@@ -291,6 +296,7 @@ class ManageUser : Fragment() {
             set.connect(updateButton.id, ConstraintSet.START, deleteButton.id, ConstraintSet.END, cardPad)
 
         }
+        set.connect(userEmail.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, cardPad)
 
         set.connect(deleteButton.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, cardPad)
         set.connect(updateButton.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, cardPad)

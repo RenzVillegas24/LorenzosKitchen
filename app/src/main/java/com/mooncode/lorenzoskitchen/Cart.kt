@@ -67,11 +67,13 @@ class Cart : Fragment() {
             val imgUUID = "${item.imageUUID}"
 
 
+            cardView.alpha = 0f
             Thread {
                 val imageBitmap = ImageUtils.getFromSharedPref(sharedPrefs, imgUUID)
 
                 requireActivity().runOnUiThread {
                     image.setImageBitmap(imageBitmap)
+                    cardView.animate().alpha(1f).setDuration(250).start()
                 }
             }.start()
 

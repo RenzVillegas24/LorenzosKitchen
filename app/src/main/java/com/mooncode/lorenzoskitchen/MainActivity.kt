@@ -1,41 +1,28 @@
 package com.mooncode.lorenzoskitchen
 
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.findNavController
+import androidx.navigation.navOptions
 import io.realm.RealmList
 import org.bson.types.ObjectId
 import java.util.UUID
 
 
 class MainActivity : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sharedPrefs = getSharedPreferences("sharedPrefs", MODE_PRIVATE)
 
         val navView = findViewById<FragmentContainerView>(R.id.navView)
-
-        navView.post {
-            if (sharedPrefs.getString("current_user", "") != "") {
-                val currentUser = realm.where(User::class.java)
-                    .equalTo("id", ObjectId(sharedPrefs.getString("current_user", "")))
-                    .findFirst()
-                if (currentUser != null) {
-                    if (currentUser.isAdministrator){
-                        findNavController(R.id.navView).findDestination(R.id.mainContainer)?.route = "admin_navigation"
-                    } else {
-                        findNavController(R.id.navView).findDestination(R.id.mainContainer)?.route = "user_navigation"
-                    }
-                    findNavController(R.id.navView).popBackStack()
-                    findNavController(R.id.navView).navigate(R.id.mainContainer)
-
-
-                }
-            }
-        }
 
         val existingPerson = realm.where(User::class.java).equalTo("email", "admin").findFirst()
 
@@ -243,5 +230,27 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
 
     }
+
+    // override the function when the user go back to this activity
+    override fun onStart() {
+        super.onStart()
+        if (sharedPrefs.getString("current_user", "") != "") {
+            val currentUser = realm.where(User::class.java)
+                .equalTo("id", ObjectId(sharedPrefs.getString("current_user", "")))
+                .findFirst()
+            if (currentUser != null) {
+                if (currentUser.isAdministrator){
+                    findNavController(R.id.navView).findDestination(R.id.mainContainer)?.route = "admin_navigation"
+                } else {
+                    findNavController(R.id.navView).findDestination(R.id.mainContainer)?.route = "user_navigation"
+                }
+                findNavController(R.id.navView).popBackStack()
+                findNavController(R.id.navView).navigate(R.id.mainContainer)
+
+
+            }
+        }
+    }
+
 
 }
